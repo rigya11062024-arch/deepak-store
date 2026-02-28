@@ -213,7 +213,7 @@ border:none;
 padding:6px 10px;
 border-radius:8px;
 float:right;">
-✖
+CLOSE✖
 </button>
 <h4 onclick="openCart()">🛒 Cart</h4>
 <ul id="cartItems"></ul>
@@ -462,6 +462,10 @@ if(document.getElementById("invoiceNumber").innerText === ""){
   msg += "Total: ₹" + total;
 
   window.open(`https://wa.me/919738102809?text=${msg}`);
+  showSuccess();
+
+cart = [];
+updateCart();
 }
 
 function toggleAddress() {
@@ -490,6 +494,14 @@ function closeCart(){
   document.body.classList.remove("cart-open");
 }
 
+function showSuccess(){
+  document.getElementById("successPopup").style.display = "block";
+}
+
+function closeSuccess(){
+  document.getElementById("successPopup").style.display = "none";
+}
+
 function printBillOnly(){window.print();}
 function filterProducts(){
  const s=document.getElementById('search').value.toLowerCase();
@@ -506,7 +518,33 @@ style="position:fixed;bottom:20px;left:20px;
 background:#2e7d32;color:#fff;
 padding:12px 16px;border-radius:50px;
 z-index:1100;">
-🛒 View Cart
+🛒 View Cart 
 </button>
+
+<div id="successPopup" style="
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#fff;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+z-index:2000;
+text-align:center;">
+  
+  <h2 style="color:#2e7d32;">✅ Order Sent Successfully!</h2>
+  <p>Thank you for shopping with us.</p>
+  <button onclick="closeSuccess()" style="
+    margin-top:15px;
+    padding:10px 20px;
+    background:#2e7d32;
+    color:#fff;
+    border:none;
+    border-radius:6px;">
+    OK
+  </button>
+</div>
 </body>
 </html>
