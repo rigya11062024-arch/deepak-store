@@ -51,6 +51,8 @@ overflow-y:auto;
 position:fixed;
 top:0;
 right:-100%;
+left:auto;        /* IMPORTANT */
+bottom:auto;      /* IMPORTANT */
 width:85%;
 height:100%;
 background:#fff;
@@ -58,29 +60,41 @@ z-index:1001;
 transition:0.3s ease;
 overflow-y:auto;
 border-radius:0;
+padding:20px;
 }
 
 .cart.active{
 right:0;
 }
 
-#cartOverlay{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-display:none;
-z-index:1000;
 }
 
-#cartOverlay.active{
-display:block;
+@media (max-width:768px){
+
+.products{
+grid-template-columns:repeat(2, 1fr);
+gap:12px;
 }
 
-body.cart-open{
-overflow:hidden;
+.card img{
+height:140px;
+}
+
+.card-body{
+padding:12px;
+}
+
+.card h3{
+font-size:14px;
+}
+
+.price{
+font-size:14px;
+}
+
+.card button{
+font-size:13px;
+padding:8px;
 }
 
 }
@@ -192,7 +206,15 @@ body * { visibility: hidden; }
 
 <!-- CART -->
 <div class="cart">
-<button onclick="closeCart()" style="float:right;background:#c62828;">✖</button>
+<button onclick="closeCart()" 
+style="background:#c62828;
+color:#fff;
+border:none;
+padding:6px 10px;
+border-radius:8px;
+float:right;">
+✖
+</button>
 <h4 onclick="openCart()">🛒 Cart</h4>
 <ul id="cartItems"></ul>
 <p><strong>Total: ₹<span id="total">0</span></strong></p>
@@ -277,11 +299,6 @@ ${p.category}
 function addToCart(i){
   cart.push(products[i]);
   updateCart();
-
-  // Auto open cart on mobile
-  if (window.innerWidth <= 768) {
-    openCart();
-  }
 }
 function removeItem(i){cart.splice(i,1);updateCart();}
 function clearCart(){cart=[];updateCart();}
@@ -341,6 +358,11 @@ cart.forEach(p=>{
 document.getElementById("billTotal").innerText = total;
 
 const bill = document.getElementById("customerBill");
+
+// Close cart first
+closeCart();
+
+// Show bill
 bill.style.display = "block";
 bill.scrollIntoView({behavior:"smooth"});
 }
@@ -387,7 +409,9 @@ doc.save("DeepakStore_Invoice.pdf");
 }
 
 function sendWhatsApp() {
-
+if(document.getElementById("invoiceNumber").innerText === ""){
+   showCustomerBill();
+}
   if(cart.length === 0){
     alert("Cart is empty");
     return;
@@ -447,15 +471,23 @@ function toggleAddress() {
 }
 
 function openCart(){
-document.querySelector(".cart").classList.add("active");
-document.getElementById("cartOverlay").classList.add("active");
-document.body.classList.add("cart-open");
+  const cart = document.querySelector(".cart");
+  const overlay = document.getElementById("cartOverlay");
+
+  if(cart) cart.classList.add("active");
+  if(overlay) overlay.classList.add("active");
+
+  document.body.classList.add("cart-open");
 }
 
 function closeCart(){
-document.querySelector(".cart").classList.remove("active");
-document.getElementById("cartOverlay").classList.remove("active");
-document.body.classList.remove("cart-open");
+  const cart = document.querySelector(".cart");
+  const overlay = document.getElementById("cartOverlay");
+
+  if(cart) cart.classList.remove("active");
+  if(overlay) overlay.classList.remove("active");
+
+  document.body.classList.remove("cart-open");
 }
 
 function printBillOnly(){window.print();}
