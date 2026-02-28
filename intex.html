@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deepak Store | Smart General Store</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{margin:0;font-family:Poppins,sans-serif;background:#f5f7fa;color:#333}
+header{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;padding:40px;text-align:center}
+nav{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#1b5e20}
+nav a{color:#fff;margin:0 10px;text-decoration:none}
+.container{max-width:1200px;margin:auto;padding:30px}
+h2{text-align:center;color:#2e7d32;margin-bottom:20px}
+
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+input,select,button,textarea{padding:12px;border-radius:8px;border:1px solid #ccc;font-size:1rem}
+button{background:#2e7d32;color:#fff;border:none;cursor:pointer}
+
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
+.card{background:#fff;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1);overflow:hidden;transition:.3s;position:relative}
+.card:hover{transform:translateY(-8px)}
+.card img{width:100%;height:200px;object-fit:cover}
+.card-body{padding:20px;text-align:center}
+.badge{display:inline-block;background:#2e7d32;color:#fff;padding:4px 12px;border-radius:20px;font-size:.75rem;margin-bottom:10px}
+.out{position:absolute;top:15px;right:15px;background:#c62828;color:#fff;padding:6px 10px;border-radius:8px;font-size:.75rem}
+.price{font-size:1.2rem;font-weight:600;margin:8px 0}
+
+/* CART */
+.cart{
+position:fixed;
+bottom:20px;
+left:20px;
+background:#fff;
+padding:15px;
+width:300px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
+max-height:80vh;
+overflow-y:auto;
+}
+.cart ul{padding-left:18px;font-size:.9rem}
+.cart button{width:100%;margin-top:8px}
+
+/* MOBILE CART */
+@media(max-width:768px){
+.cart{
+left:0;
+bottom:0;
+width:100%;
+border-radius:20px 20px 0 0;
+}
+}
+
+.whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:14px 22px;border-radius:40px;text-decoration:none;font-weight:600}
+.info{background:#fff;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1);text-align:center}
+iframe{width:100%;height:300px;border-radius:16px;border:0}
+footer{background:#1b5e20;color:#fff;text-align:center;padding:15px;margin-top:50px}
+
+@media print {
+body * { visibility: hidden; }
+#billArea, #billArea * { visibility: visible; }
+#billArea { position: absolute; left: 0; top: 0; width: 100%; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Deepak Store</h1>
+<p>Modern General Store for Daily Needs</p>
+</header>
+
+<nav>
+<div>
+<a href="#products">Products</a>
+<a href="#delivery">Delivery</a>
+<a href="#location">Location</a>
+</div>
+</nav>
+
+<!-- PRODUCTS -->
+<div class="container" id="products">
+<h2>Products & Price List</h2>
+
+<!-- BILL SECTION -->
+<div id="customerBill" style="display:none;margin-bottom:30px;">
+<div id="billArea" style="max-width:400px;margin:auto;padding:20px;background:#fff;border-radius:12px;box-shadow:0 5px 15px rgba(0,0,0,.1)">
+
+<!-- LOGO -->
+<div style="text-align:center;margin-bottom:10px">
+<img src="images/logo.png" alt="Logo" style="width:80px;">
+</div>
+
+<h2 style="text-align:center">Deepak Store</h2>
+<p style="text-align:center">Customer Bill</p>
+<p><strong>Invoice No:</strong> <span id="invoiceNumber"></span></p>
+<p><strong>Order No:</strong> <span id="orderNumber"></span></p>
+<p><strong>Customer:</strong> <span id="billCustomerName"></span></p>
+<p><strong>Date:</strong> <span id="billDate"></span></p>
+
+<table style="width:100%;border-collapse:collapse;margin-top:10px">
+<thead>
+<tr>
+<th style="border-bottom:1px dashed #000;text-align:left">Item</th>
+<th style="border-bottom:1px dashed #000;text-align:right">Price</th>
+</tr>
+</thead>
+<tbody id="billItems"></tbody>
+<tfoot>
+<tr>
+<th style="border-top:1px dashed #000;text-align:left">Total</th>
+<th style="border-top:1px dashed #000;text-align:right">₹<span id="billTotal"></span></th>
+</tr>
+</tfoot>
+</table>
+
+<div style="text-align:center;margin-top:15px">
+<button onclick="printBillOnly()">🖨️ Print Bill</button>
+<button onclick="downloadPDF()" style="margin-top:8px;background:#1565c0;">
+📄 Download PDF
+</button>
+</div>
+
+</div>
+</div>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search product..." onkeyup="filterProducts()">
+
+  <select id="categoryFilter" onchange="filterProducts()">
+    <option value="all">All Categories</option>
+    <option value="Namkeen">Namkeen</option>
+    <option value="Dry Fruits">Dry Fruits</option>
+    <option value="Biscuits">Biscuits</option>
+    <option value="Chocolates">Chocolates</option>
+  </select>
+</div>
+
+<div class="products" id="productList"></div>
+</div>
+
+<!-- DELIVERY -->
+<div class="container" id="delivery">
+<div class="info">
+<h2>Pick Up & Home Delivery Available</h2>
+<p>🚚 Free delivery within 3 km • Same day delivery</p>
+</div>
+</div>
+
+<!-- LOCATION (RESTORED) -->
+<div class="container" id="location">
+<div class="info">
+<h2>📍 Store Location</h2>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.8632197885877!2d86.41571337573396!3d23.787884578644846!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f6a334af0141c9%3A0x8192f97a967d4c91!2sdeepak%20store!5e0!3m2!1sen!2sin!4v1769624113242!5m2!1sen!2sin"></iframe>
+</div>
+</div>
+
+<!-- CART -->
+<div class="cart">
+<h4>🛒 Cart</h4>
+<ul id="cartItems"></ul>
+<p><strong>Total: ₹<span id="total">0</span></strong></p>
+<input type="text" id="customerName" placeholder="Customer Name" style="width:100%;margin-bottom:8px;">
+<button onclick="showCustomerBill()">🧾 Generate Bill</button>
+
+<div style="margin:10px 0">
+  <label>
+    <input type="radio" name="orderType" value="Pickup" checked onchange="toggleAddress()">
+    🏪 Store Pickup
+  </label><br>
+
+  <label>
+    <input type="radio" name="orderType" value="Home Delivery" onchange="toggleAddress()">
+    🚚 Home Delivery
+  </label>
+</div>
+
+<div id="addressBox" style="display:none;margin-top:10px">
+  <textarea id="deliveryAddress" placeholder="Enter delivery address"
+    style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc"></textarea>
+</div>
+
+
+<button onclick="sendWhatsApp()">📲 WhatsApp Order</button>
+
+<button onclick="clearCart()" style="background:#c62828;">🗑 Clear Cart</button>
+
+
+</div>
+
+<a class="whatsapp" onclick="sendWhatsApp()">💬 WhatsApp Order</a>
+
+<footer>
+<p>© 2026 Deepak Store</p>
+</footer>
+
+<script>
+const products=[
+ {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'200g',img:'images/Aloo_Bhujia.jpg',stock:true},
+ {name:'Kaju',category:'Dry Fruits',price:450,weight:'250g',img:'images/Cashew.jpg',stock:true},
+ {name:'Kishmish',category:'Dry Fruits',price:450,weight:'250g',img:'images/raisins.jpg',stock:true},
+ {name:'Badam',category:'Dry Fruits',price:450,weight:'250g',img:'images/Almond.jpg',stock:true},
+ {name:'Pista',category:'Dry Fruits',price:450,weight:'250g',img:'images/pista.jpg',stock:false},
+ {name:'Marie Biscuit',category:'Biscuits',price:30,weight:'100g',img:'images/Marie.jpg',stock:true},
+ {name:'Dairy Milk',category:'Chocolates',price:50,weight:'45g',img:'images/Dailry_Milk.jpg',stock:true}
+];
+
+
+let cart=[];
+
+function renderProducts(list){
+const box=document.getElementById('productList');
+box.innerHTML='';
+
+list.forEach((p,i)=>{
+box.innerHTML+=`
+<div class="card">
+<img src="${p.img}">
+<div class="card-body">
+
+<span style="
+display:inline-block;
+background:#2e7d32;
+color:#fff;
+padding:4px 12px;
+border-radius:20px;
+font-size:12px;
+margin-bottom:8px;">
+${p.category}
+</span>
+
+<h3>${p.name}</h3>
+<div class="price">₹${p.price}</div>
+<button onclick="addToCart(${i})">Add to Cart</button>
+
+</div>
+</div>`;
+});
+}
+
+function addToCart(i){cart.push(products[i]);updateCart();}
+function removeItem(i){cart.splice(i,1);updateCart();}
+function clearCart(){cart=[];updateCart();}
+
+function updateCart(){
+const ul=document.getElementById('cartItems');
+ul.innerHTML='';
+let total=0;
+cart.forEach((p,idx)=>{
+total+=p.price;
+ul.innerHTML+=`<li>${p.name} - ₹${p.price} <a href="#" onclick="removeItem(${idx})">❌</a></li>`;
+});
+document.getElementById('total').innerText=total;
+}
+
+let invoiceCounter = localStorage.getItem("invoiceCounter") 
+    ? parseInt(localStorage.getItem("invoiceCounter")) 
+    : 1001;
+
+function showCustomerBill(){
+
+if(cart.length===0){
+    alert("Cart is empty");
+    return;
+}
+
+const name = document.getElementById("customerName").value.trim();
+if(name===""){
+    alert("Please enter customer name");
+    return;
+}
+
+invoiceCounter++;
+localStorage.setItem("invoiceCounter", invoiceCounter);
+
+const invoiceNo = "INV" + invoiceCounter;
+const orderNo = "ORD" + Math.floor(10000 + Math.random() * 90000);
+
+document.getElementById("invoiceNumber").innerText = invoiceNo;
+document.getElementById("orderNumber").innerText = orderNo;
+document.getElementById("billCustomerName").innerText = name;
+document.getElementById("billDate").innerText = new Date().toLocaleString();
+
+let total = 0;
+const tbody = document.getElementById("billItems");
+tbody.innerHTML = "";
+
+cart.forEach(p=>{
+    total += p.price;
+    tbody.innerHTML += `
+        <tr>
+            <td>${p.name}</td>
+            <td style="text-align:right">₹${p.price}</td>
+        </tr>`;
+});
+
+document.getElementById("billTotal").innerText = total;
+
+const bill = document.getElementById("customerBill");
+bill.style.display = "block";
+bill.scrollIntoView({behavior:"smooth"});
+}
+
+async function downloadPDF(){
+
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+
+let y = 10;
+
+doc.setFontSize(16);
+doc.text("Deepak Store", 80, y);
+y += 10;
+
+doc.setFontSize(12);
+doc.text("Invoice No: " + document.getElementById("invoiceNumber").innerText, 10, y);
+y += 8;
+
+doc.text("Order No: " + document.getElementById("orderNumber").innerText, 10, y);
+y += 8;
+
+doc.text("Customer: " + document.getElementById("billCustomerName").innerText, 10, y);
+y += 8;
+
+doc.text("Date: " + document.getElementById("billDate").innerText, 10, y);
+y += 10;
+
+doc.text("Items:", 10, y);
+y += 8;
+
+let total = 0;
+
+cart.forEach(p=>{
+doc.text(`${p.name} - ₹${p.price}`, 10, y);
+y += 8;
+total += p.price;
+});
+
+y += 5;
+doc.text("Total: ₹" + total, 10, y);
+
+doc.save("DeepakStore_Invoice.pdf");
+}
+
+function sendWhatsApp() {
+  let orderType = document.querySelector('input[name="orderType"]:checked').value;
+  let address = document.getElementById('deliveryAddress').value.trim();
+
+  if (orderType === 'Home Delivery' && address === '') {
+    alert('Please enter delivery address');
+    return;
+  }
+
+  let msg = 'Order from Deepak Store:%0A';
+  msg += 'Order Type: ' + orderType + '%0A';
+
+  if (orderType === 'Home Delivery') {
+    msg += 'Address: ' + address + '%0A';
+  }
+
+  msg += '%0AItems:%0A';
+  let total = 0;
+
+  cart.forEach(p => {
+    msg += `- ${p.name} (${p.weight}) ₹${p.price}%0A`;
+    total += p.price;
+  });
+
+  msg += `%0ATotal: ₹${total}`;
+
+  window.open(`https://wa.me/919738102809?text=${msg}`);
+}
+
+function toggleAddress() {
+  const type = document.querySelector('input[name="orderType"]:checked').value;
+  document.getElementById('addressBox').style.display =
+    type === 'Home Delivery' ? 'block' : 'none';
+}
+
+
+function printBillOnly(){window.print();}
+function filterProducts(){
+ const s=document.getElementById('search').value.toLowerCase();
+ const c=document.getElementById('categoryFilter').value;
+ renderProducts(products.filter(p=>p.name.toLowerCase().includes(s)&&(c==='all'||p.category===c)));
+}
+
+renderProducts(products);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>
