@@ -253,14 +253,57 @@ CLOSE✖
 </footer>
 
 <script>
-const products=[
- {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'200g',img:'images/Aloo_Bhujia.jpg',stock:true},
+const products=[ {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Aloo_Bhujia.jpg',stock:true},
+ {name:'Plain Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Plain_Bhujia.jpg',stock:true},
+ {name:'Masala Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Masala_Bhujia.jpg',stock:true},
+ {name:'Meetha Mixture',category:'Namkeen',price:80,weight:'250g',img:'images/Meetha_Mixture.jpg',stock:true},
+ {name:'Jhaal Mixture',category:'Namkeen',price:80,weight:'250g',img:'images/Jhaal_Mixture.jpg',stock:true},
+ {name:'Mix Mixture',category:'Namkeen',price:80,weight:'250g',img:'images/Mix_Mixture.jpg',stock:true},
+ {name:'Moong Dal',category:'Namkeen',price:80,weight:'250g',img:'images/Moong_Dal.jpg',stock:true},
+ {name:'Chana Dal',category:'Namkeen',price:80,weight:'250g',img:'images/Chana_Dal.jpg',stock:true},
+ {name:'Masala Badam',category:'Namkeen',price:80,weight:'250g',img:'images/Masala_Badam.jpg',stock:true},
+ {name:'Badam Pakoda',category:'Namkeen',price:80,weight:'250g',img:'images/Badam_Pakoda.jpg',stock:true},
  {name:'Kaju',category:'Dry Fruits',price:450,weight:'250g',img:'images/cashew.jpg',stock:true},
  {name:'Kishmish',category:'Dry Fruits',price:450,weight:'250g',img:'images/raisins.jpg',stock:true},
  {name:'Badam',category:'Dry Fruits',price:450,weight:'250g',img:'images/Almond.jpg',stock:true},
- {name:'Pista',category:'Dry Fruits',price:450,weight:'250g',img:'images/pista.jpg',stock:false},
- {name:'Marie Biscuit',category:'Biscuits',price:30,weight:'100g',img:'images/Marie.jpg',stock:true},
- {name:'Dairy Milk',category:'Chocolates',price:50,weight:'45g',img:'images/Dailry_Milk.jpg',stock:true}
+ {name:'Pista',category:'Dry Fruits',price:450,weight:'250g',img:'images/pista.jpg',stock:true},
+ {name:'Akhroot',category:'Dry Fruits',price:450,weight:'250g',img:'images/akhroot.jpg',stock:true},
+ {name:'Anjir',category:'Dry Fruits',price:450,weight:'250g',img:'images/anjir.jpg',stock:true},
+ {name:'Munakka',category:'Dry Fruits',price:450,weight:'250g',img:'images/munakka.jpg',stock:true},
+ {name:'Britannia Marie',category:'Biscuits',price:30,weight:'100g',img:'images/Britannia_Marie.jpg',stock:true},
+{ name:'Britannia Marie Gold', category:'Biscuits', price:10, weight:'64g', img:'images/Britannia_Marie_64g.jpg', stock:true },
+{ name:'Britannia Marie Gold', category:'Biscuits', price:25, weight:'117g', img:'images/Britannia_Marie_117g.jpg', stock:true },
+{ name:'Britannia Marie Gold', category:'Biscuits', price:40, weight:'250g', img:'images/Britannia_Marie_250g.jpg', stock:true },
+{ name:'Britannia Good Day Cashew', category:'Biscuits', price:30, weight:'100g', img:'images/Good_Day_Cashew_100g.jpg', stock:true },
+{ name:'Britannia Good Day Butter', category:'Biscuits', price:30, weight:'100g', img:'images/Good_Day_Butter_100g.jpg', stock:true },
+{ name:'Britannia Good Day Choco Chip', category:'Biscuits', price:35, weight:'120g', img:'images/Good_Day_Choco_120g.jpg', stock:true },
+{ name:'Britannia 50-50 Sweet & Salty', category:'Biscuits', price:30, weight:'200g', img:'images/5050_Sweet_Salty_200g.jpg', stock:true },
+{ name:'Britannia 50-50 Maska Chaska', category:'Biscuits', price:35, weight:'200g', img:'images/5050_Maska_200g.jpg', stock:true },
+{ name:'Britannia Bourbon', category:'Biscuits', price:40, weight:'150g', img:'images/Britannia_Bourbon_150g.jpg', stock:true },
+{ name:'Britannia Bourbon', category:'Biscuits', price:70, weight:'300g', img:'images/Britannia_Bourbon_300g.jpg', stock:true },
+{ name:'Britannia Little Hearts', category:'Biscuits', price:25, weight:'75g', img:'images/Little_Hearts_75g.jpg', stock:true },
+{ name:'Britannia Little Hearts', category:'Biscuits', price:45, weight:'150g', img:'images/Little_Hearts_150g.jpg', stock:true },
+{ name:'Britannia Treat Croissant', category:'Biscuits', price:20, weight:'60g', img:'images/Treat_Croissant_60g.jpg', stock:true },
+{ name:'Britannia Treat Stars', category:'Biscuits', price:20, weight:'60g', img:'images/Treat_Stars_60g.jpg', stock:true },
+{ name:'Britannia Milk Bikis', category:'Biscuits', price:25, weight:'200g', img:'images/Milk_Bikis_200g.jpg', stock:true },
+{ name:'Britannia Nutri Choice Digestive', category:'Biscuits', price:35, weight:'100g', img:'images/Nutri_Digestive_100g.jpg', stock:true },
+{ name:'Britannia Nutri Choice Thin Arrowroot', category:'Biscuits', price:40, weight:'300g', img:'images/Nutri_Arrowroot_300g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk', category:'Chocolates', price:10, weight:'13g', img:'images/Dairy_Milk_13g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk', category:'Chocolates', price:20, weight:'24g', img:'images/Dairy_Milk_24g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk', category:'Chocolates', price:40, weight:'45g', img:'images/Dairy_Milk_45g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk', category:'Chocolates', price:80, weight:'110g', img:'images/Dairy_Milk_110g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk', category:'Chocolates', price:175, weight:'220g', img:'images/Dairy_Milk_220g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Silk', category:'Chocolates', price:85, weight:'60g', img:'images/Silk_60g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Silk', category:'Chocolates', price:160, weight:'150g', img:'images/Silk_150g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Fruit & Nut', category:'Chocolates', price:45, weight:'36g', img:'images/Fruit_Nut_36g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Fruit & Nut', category:'Chocolates', price:90, weight:'80g', img:'images/Fruit_Nut_80g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Crackle', category:'Chocolates', price:45, weight:'36g', img:'images/Crackle_36g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Crackle', category:'Chocolates', price:90, weight:'80g', img:'images/Crackle_80g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Roast Almond', category:'Chocolates', price:45, weight:'36g', img:'images/Roast_Almond_36g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Roast Almond', category:'Chocolates', price:90, weight:'80g', img:'images/Roast_Almond_80g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Lickables', category:'Chocolates', price:45, weight:'20g', img:'images/Lickables_20g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Shots', category:'Chocolates', price:30, weight:'25g', img:'images/Shots_25g.jpg', stock:true },
+{ name:'Cadbury Dairy Milk Shots', category:'Chocolates', price:60, weight:'52g', img:'images/Shots_52g.jpg', stock:true }
 ];
 
 
@@ -551,5 +594,6 @@ text-align:center;">
 </div>
 </body>
 </html>
+
 
 
