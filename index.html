@@ -45,13 +45,47 @@ overflow-y:auto;
 .cart button{width:100%;margin-top:8px}
 
 /* MOBILE CART */
-@media(max-width:768px){
-.cart{
+@media (max-width:768px) {
+
+/* Overlay */
+#cartOverlay{
+position:fixed;
+top:0;
 left:0;
-bottom:0;
 width:100%;
-border-radius:20px 20px 0 0;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:none;
+z-index:998;
 }
+
+/* Mobile Cart Drawer */
+.cart{
+top:0;
+left:auto;
+right:-100%;
+bottom:auto;
+width:85%;
+height:100%;
+border-radius:0;
+transition:0.3s ease;
+z-index:999;
+}
+
+/* Active State */
+.cart.active{
+right:0;
+}
+
+#cartOverlay.active{
+display:block;
+}
+
+/* Prevent background scroll */
+body.cart-open{
+overflow:hidden;
+}
+
 }
 
 .whatsapp{position:fixed;bottom:20px;right:20px;background:#25D366;color:#fff;padding:14px 22px;border-radius:40px;text-decoration:none;font-weight:600}
@@ -161,7 +195,7 @@ body * { visibility: hidden; }
 
 <!-- CART -->
 <div class="cart">
-<h4>🛒 Cart</h4>
+<h4 onclick="openCart()">🛒 Cart</h4>
 <ul id="cartItems"></ul>
 <p><strong>Total: ₹<span id="total">0</span></strong></p>
 <input type="text" id="customerName" placeholder="Customer Name" style="width:100%;margin-bottom:8px;">
@@ -192,7 +226,7 @@ body * { visibility: hidden; }
 
 </div>
 
-<a class="whatsapp" onclick="sendWhatsApp()">💬 WhatsApp Order</a>
+
 
 <footer>
 <p>© 2026 Deepak Store</p>
@@ -347,22 +381,46 @@ doc.save("DeepakStore_Invoice.pdf");
 }
 
 function sendWhatsApp() {
+
+  if(cart.length === 0){
+    alert("Cart is empty");
+    return;
+  }
+
   let orderType = document.querySelector('input[name="orderType"]:checked').value;
   let address = document.getElementById('deliveryAddress').value.trim();
+  let customerName = document.getElementById("customerName").value.trim();
+
+  if(customerName === ""){
+    alert("Please enter customer name");
+    return;
+  }
 
   if (orderType === 'Home Delivery' && address === '') {
     alert('Please enter delivery address');
     return;
   }
 
-  let msg = 'Order from Deepak Store:%0A';
-  msg += 'Order Type: ' + orderType + '%0A';
+  // Get invoice details from bill
+  let invoiceNo = document.getElementById("invoiceNumber").innerText;
+  let orderNo = document.getElementById("orderNumber").innerText;
+  let billDate = document.getElementById("billDate").innerText;
+
+  let msg = "🧾 *Deepak Store*%0A";
+  msg += "--------------------------%0A";
+  msg += "Invoice No: " + invoiceNo + "%0A";
+  msg += "Order No: " + orderNo + "%0A";
+  msg += "Customer: " + customerName + "%0A";
+  msg += "Date: " + billDate + "%0A%0A";
+
+  msg += "Order Type: " + orderType + "%0A";
 
   if (orderType === 'Home Delivery') {
-    msg += 'Address: ' + address + '%0A';
+    msg += "Address: " + address + "%0A";
   }
 
-  msg += '%0AItems:%0A';
+  msg += "%0A🛒 *Items:*%0A";
+
   let total = 0;
 
   cart.forEach(p => {
@@ -370,7 +428,8 @@ function sendWhatsApp() {
     total += p.price;
   });
 
-  msg += `%0ATotal: ₹${total}`;
+  msg += "%0A--------------------------%0A";
+  msg += "Total: ₹" + total;
 
   window.open(`https://wa.me/919738102809?text=${msg}`);
 }
@@ -381,6 +440,17 @@ function toggleAddress() {
     type === 'Home Delivery' ? 'block' : 'none';
 }
 
+function openCart(){
+document.querySelector(".cart").classList.add("active");
+document.getElementById("cartOverlay").classList.add("active");
+document.body.classList.add("cart-open");
+}
+
+function closeCart(){
+document.querySelector(".cart").classList.remove("active");
+document.getElementById("cartOverlay").classList.remove("active");
+document.body.classList.remove("cart-open");
+}
 
 function printBillOnly(){window.print();}
 function filterProducts(){
@@ -392,5 +462,6 @@ function filterProducts(){
 renderProducts(products);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div id="cartOverlay" onclick="closeCart()"></div>
 </body>
 </html>
