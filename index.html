@@ -4,8 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Deepak Store | Smart General Store</title>
-
+<link rel="icon" href="images/logo.png" type="image/png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Deepak Store - Modern General Store with Pick Up & Home Delivery">
+<meta name="keywords" content="General Store, Grocery, Namkeen, Dry Fruits, Biscuits, Chocolates">
+<meta name="author" content="Deepak Store">
 
 <style>
 body{margin:0;font-family:Poppins,sans-serif;background:#f5f7fa;color:#333}
@@ -31,43 +34,25 @@ button{background:#2e7d32;color:#fff;border:none;cursor:pointer}
 /* CART */
 .cart{
 position:fixed;
-bottom:20px;
-left:20px;
-background:#fff;
-padding:15px;
-width:300px;
-border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,.2);
-max-height:80vh;
-overflow-y:auto;
-}
-.cart ul{padding-left:18px;font-size:.9rem}
-.cart button{width:100%;margin-top:8px}
-
-/* MOBILE CART */
-@media (max-width:768px){
-
-.cart{
-position:fixed;
 top:0;
 right:-100%;
-left:auto;        /* IMPORTANT */
-bottom:auto;      /* IMPORTANT */
-width:85%;
+width:320px;
 height:100%;
 background:#fff;
 z-index:1001;
 transition:0.3s ease;
 overflow-y:auto;
-border-radius:0;
 padding:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
-
 .cart.active{
 right:0;
 }
+.cart ul{padding-left:18px;font-size:.9rem}
+.cart button{width:100%;margin-top:8px}
 
-}
+
+
 
 @media (max-width:768px){
 
@@ -105,10 +90,30 @@ iframe{width:100%;height:300px;border-radius:16px;border:0}
 footer{background:#1b5e20;color:#fff;text-align:center;padding:15px;margin-top:50px}
 
 @media print {
-body * { visibility: hidden; }
-#billArea, #billArea * { visibility: visible; }
-#billArea { position: absolute; left: 0; top: 0; width: 100%; }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #billArea, #billArea * {
+    visibility: visible;
+  }
+
+  #billArea {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
 }
+
+@page {
+    margin: 10mm;
+}
+
 </style>
 </head>
 
@@ -250,10 +255,13 @@ CLOSE✖
 
 <footer>
 <p>© 2026 Deepak Store</p>
+<p>📞 Contact: +91 XXXXX XXXXX</p>
+<p>📍 Location: Your Area Name</p>
 </footer>
 
 <script>
-const products=[ {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Aloo_Bhujia.jpg',stock:true},
+const products=[
+ {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Aloo_Bhujia.jpg',stock:true},
  {name:'Plain Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Plain_Bhujia.jpg',stock:true},
  {name:'Masala Bhujia',category:'Namkeen',price:80,weight:'250g',img:'images/Masala_Bhujia.jpg',stock:true},
  {name:'Meetha Mixture',category:'Namkeen',price:80,weight:'250g',img:'images/Meetha_Mixture.jpg',stock:true},
@@ -267,9 +275,9 @@ const products=[ {name:'Aloo Bhujia',category:'Namkeen',price:80,weight:'250g',i
  {name:'Kishmish',category:'Dry Fruits',price:450,weight:'250g',img:'images/raisins.jpg',stock:true},
  {name:'Badam',category:'Dry Fruits',price:450,weight:'250g',img:'images/Almond.jpg',stock:true},
  {name:'Pista',category:'Dry Fruits',price:450,weight:'250g',img:'images/pista.jpg',stock:true},
- {name:'Akhroot',category:'Dry Fruits',price:450,weight:'250g',img:'images/Akhroot.jpg',stock:true},
- {name:'Anjir',category:'Dry Fruits',price:450,weight:'250g',img:'images/Anjir.jpg',stock:true},
- {name:'Munakka',category:'Dry Fruits',price:450,weight:'250g',img:'images/Munakka.jpg',stock:false},
+ {name:'Akhroot',category:'Dry Fruits',price:450,weight:'250g',img:'images/akhroot.jpg',stock:true},
+ {name:'Anjir',category:'Dry Fruits',price:450,weight:'250g',img:'images/anjir.jpg',stock:true},
+ {name:'Munakka',category:'Dry Fruits',price:450,weight:'250g',img:'images/munakka.jpg',stock:true},
  {name:'Britannia Marie',category:'Biscuits',price:30,weight:'100g',img:'images/Britannia_Marie.jpg',stock:true},
 { name:'Britannia Marie Gold', category:'Biscuits', price:10, weight:'64g', img:'images/Britannia_Marie.jpg', stock:true },
 { name:'Britannia Marie Gold', category:'Biscuits', price:25, weight:'117g', img:'images/Britannia_Marie.jpg', stock:true },
@@ -316,7 +324,7 @@ box.innerHTML='';
 list.forEach((p,i)=>{
 box.innerHTML+=`
 <div class="card">
-<img src="${p.img}">
+<img src="${p.img}" loading="lazy">
 <div class="card-body">
 
 <span style="
@@ -343,7 +351,15 @@ ${p.category}
 }
 
 function addToCart(i){
-  cart.push(products[i]);
+
+  let existing = cart.find(item => item.name === products[i].name && item.weight === products[i].weight);
+
+  if(existing){
+    existing.qty += 1;
+  } else {
+    cart.push({...products[i], qty:1});
+  }
+
   updateCart();
 }
 function removeItem(i){cart.splice(i,1);updateCart();}
@@ -353,10 +369,15 @@ function updateCart(){
 const ul=document.getElementById('cartItems');
 ul.innerHTML='';
 let total=0;
+
 cart.forEach((p,idx)=>{
-total+=p.price;
-ul.innerHTML+=`<li>${p.name} - ₹${p.price} <a href="#" onclick="removeItem(${idx})">❌</a></li>`;
+total+=p.price * p.qty;
+ul.innerHTML+=`<li>
+${p.name} (${p.qty}) - ₹${p.price * p.qty}
+<a href="#" onclick="removeItem(${idx})">❌</a>
+</li>`;
 });
+
 document.getElementById('total').innerText=total;
 }
 
@@ -393,11 +414,17 @@ const tbody = document.getElementById("billItems");
 tbody.innerHTML = "";
 
 cart.forEach(p=>{
-    total += p.price;
+    let itemTotal = p.price * p.qty;
+    total += itemTotal;
+
     tbody.innerHTML += `
         <tr>
-            <td>${p.name}</td>
-            <td style="text-align:right">₹${p.price}</td>
+            <td>
+                ${p.name} (${p.qty})
+            </td>
+            <td style="text-align:right">
+                ₹${itemTotal}
+            </td>
         </tr>`;
 });
 
@@ -443,13 +470,14 @@ y += 8;
 let total = 0;
 
 cart.forEach(p=>{
-doc.text(`${p.name} - ₹${p.price}`, 10, y);
+let itemTotal = p.price * p.qty;
+doc.text(`${p.name} (${p.qty}) - Rs. ${itemTotal}`, 10, y);
 y += 8;
-total += p.price;
+total += itemTotal;
 });
 
 y += 5;
-doc.text("Total: ₹" + total, 10, y);
+doc.text("Total: Rs. " + total, 10, y);
 
 doc.save("DeepakStore_Invoice.pdf");
 }
@@ -499,19 +527,18 @@ if(document.getElementById("invoiceNumber").innerText === ""){
 
   let total = 0;
 
-  cart.forEach(p => {
-    msg += `- ${p.name} (${p.weight}) ₹${p.price}%0A`;
-    total += p.price;
-  });
+
+cart.forEach(p => {
+    let itemTotal = p.price * p.qty;
+    msg += `- ${p.name} (${p.weight}) x${p.qty} ₹${itemTotal}%0A`;
+    total += itemTotal;
+});
 
   msg += "%0A--------------------------%0A";
   msg += "Total: ₹" + total;
 
   window.open(`https://wa.me/919738102809?text=${msg}`);
-  showSuccess();
 
-cart = [];
-updateCart();
 }
 
 function toggleAddress() {
@@ -521,23 +548,13 @@ function toggleAddress() {
 }
 
 function openCart(){
-  const cart = document.querySelector(".cart");
-  const overlay = document.getElementById("cartOverlay");
-
-  if(cart) cart.classList.add("active");
-  if(overlay) overlay.classList.add("active");
-
-  document.body.classList.add("cart-open");
+  document.querySelector(".cart").classList.add("active");
+  document.getElementById("cartOverlay").classList.add("active");
 }
 
 function closeCart(){
-  const cart = document.querySelector(".cart");
-  const overlay = document.getElementById("cartOverlay");
-
-  if(cart) cart.classList.remove("active");
-  if(overlay) overlay.classList.remove("active");
-
-  document.body.classList.remove("cart-open");
+  document.querySelector(".cart").classList.remove("active");
+  document.getElementById("cartOverlay").classList.remove("active");
 }
 
 function showSuccess(){
@@ -594,8 +611,3 @@ text-align:center;">
 </div>
 </body>
 </html>
-
-
-
-
-
