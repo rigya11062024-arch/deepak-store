@@ -21,7 +21,12 @@ h2{text-align:center;color:#2e7d32;margin-bottom:20px}
 .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
 input,select,button,textarea{padding:12px;border-radius:8px;border:1px solid #ccc;font-size:1rem}
 button{background:#2e7d32;color:#fff;border:none;cursor:pointer}
-
+button {
+  transition: 0.2s;
+}
+button:hover {
+  transform: scale(1.1);
+}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px}
 .card{background:#fff;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,.1);overflow:hidden;transition:.3s;position:relative}
 .card:hover{transform:translateY(-8px)}
@@ -243,7 +248,9 @@ CLOSE✖
     style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc"></textarea>
 </div>
 
-
+<button onclick="addLocationLink()" style="margin-top:8px;background:#1565c0;">
+📍 Add Google Maps Location
+</button>
 <button onclick="sendWhatsApp()">📲 WhatsApp Order</button>
 
 <button onclick="clearCart()" style="background:#c62828;">🗑 Clear Cart</button>
@@ -255,8 +262,8 @@ CLOSE✖
 
 <footer>
 <p>© 2026 Deepak Store</p>
-<p>📞 Contact: +91 XXXXX XXXXX</p>
-<p>📍 Location: Your Area Name</p>
+<p>📞 Contact: +91 9939371968</p>
+<p>📍 Location: Rajendra Market, Bank More, Dhanbad</p>
 </footer>
 
 <script>
@@ -343,42 +350,82 @@ ${p.category}
 <p style="color:#777;font-size:13px;margin:4px 0;">
 ⚖️ ${p.weight}
 </p>
-<button onclick="addToCart(${i})">Add to Cart</button>
-
+<button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
 </div>
 </div>`;
 });
 }
 
-function addToCart(i){
+function addToCart(product){
 
-  let existing = cart.find(item => item.name === products[i].name && item.weight === products[i].weight);
+  let existing = cart.find(item => 
+    item.name === product.name && item.weight === product.weight
+  );
 
   if(existing){
     existing.qty += 1;
   } else {
-    cart.push({...products[i], qty:1});
+    cart.push({...product, qty:1});
   }
 
   updateCart();
 }
+
 function removeItem(i){cart.splice(i,1);updateCart();}
 function clearCart(){cart=[];updateCart();}
 
 function updateCart(){
-const ul=document.getElementById('cartItems');
-ul.innerHTML='';
-let total=0;
+  const ul = document.getElementById('cartItems');
+  ul.innerHTML = '';
+  let total = 0;
 
-cart.forEach((p,idx)=>{
-total+=p.price * p.qty;
-ul.innerHTML+=`<li>
-${p.name} (${p.qty}) - ₹${p.price * p.qty}
-<a href="#" onclick="removeItem(${idx})">❌</a>
-</li>`;
-});
+  cart.forEach((p, idx) => {
+    total += p.price * p.qty;
 
-document.getElementById('total').innerText=total;
+    ul.innerHTML += `
+      <li style="margin-bottom:10px;">
+        
+        <div style="font-weight:500;">
+          ${p.name} (${p.weight})
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-top:5px;">
+          
+          <button onclick="decreaseQty(${idx})" 
+            style="padding:4px 10px;border-radius:6px;">➖</button>
+
+          <span>${p.qty}</span>
+
+          <button onclick="increaseQty(${idx})" 
+            style="padding:4px 10px;border-radius:6px;">➕</button>
+
+          <span style="margin-left:auto;">
+            ₹${p.price * p.qty}
+          </span>
+
+          <button onclick="removeItem(${idx})" 
+            style="background:#c62828;margin-left:8px;">❌</button>
+
+        </div>
+      </li>
+    `;
+  });
+
+  document.getElementById('total').innerText = total;
+}
+
+function increaseQty(index){
+  cart[index].qty += 1;
+  updateCart();
+}
+
+function decreaseQty(index){
+  if(cart[index].qty > 1){
+    cart[index].qty -= 1;
+  } else {
+    cart.splice(index, 1);
+  }
+  updateCart();
 }
 
 let invoiceCounter = localStorage.getItem("invoiceCounter") 
@@ -480,6 +527,27 @@ y += 5;
 doc.text("Total: Rs. " + total, 10, y);
 
 doc.save("DeepakStore_Invoice.pdf");
+}
+
+function addLocationLink(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos => {
+      let lat = pos.coords.latitude;
+      let lon = pos.coords.longitude;
+
+      let link = `https://www.google.com/maps?q=${lat},${lon}`;
+
+      document.getElementById("deliveryAddress").value += 
+        "\n📍 Location: " + link;
+
+      alert("Location added successfully!");
+    },
+    () => {
+      alert("Location permission denied");
+    });
+  } else {
+    alert("Geolocation not supported");
+  }
 }
 
 function sendWhatsApp() {
@@ -611,4 +679,3 @@ text-align:center;">
 </div>
 </body>
 </html>
-
