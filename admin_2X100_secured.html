@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Admin Panel</title>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6uZEcHZGSBAkk2bBQSk30gHhibe3F-q0",
+  authDomain: "deepak-store-6f0cf.firebaseapp.com",
+  projectId: "deepak-store-6f0cf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+window.db = db;
+window.fb = { collection, addDoc, getDocs, doc, updateDoc, deleteDoc };
+
+// LOGIN
+window.login = async function(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  try{
+    await signInWithEmailAndPassword(auth, email, password);
+  }catch(e){ alert("Login Failed"); }
+}
+
+// AUTH STATE
+onAuthStateChanged(auth, user => {
+  if(user){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("adminPanel").style.display="block";
+    loadProducts();
+  } else {
+    document.getElementById("loginBox").style.display="block";
+    document.getElementById("adminPanel").style.display="none";
+  }
+});
+
+window.logout = () => signOut(auth);
+</script>
+
+<style>
+body{font-family:Poppins,sans-serif;background:#f1f3f6;margin:0}
+.container{max-width:1000px;margin:auto;padding:20px}
+.card{background:#fff;padding:20px;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,.1);margin-bottom:20px}
+input,select{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
+button{padding:10px 15px;border:none;border-radius:8px;background:#2e7d32;color:#fff;cursor:pointer}
+button:hover{opacity:.9}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #ddd;text-align:center}
+img{width:50px;border-radius:6px}
+.header{display:flex;justify-content:space-between;align-items:center}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginBox" class="container">
+<div class="card">
+<h2>Admin Login</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="container" style="display:none">
+
+<div class="header">
+<h2>Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div class="card">
+<h3>Add / Update Product</h3>
+<input type="hidden" id="docId">
+<div class="grid">
+<input type="text" id="name" placeholder="Product Name">
+<input type="text" id="category" placeholder="Category">
+<input type="number" id="price" placeholder="Price">
+<input type="text" id="weight" placeholder="Weight">
+<input type="text" id="img" placeholder="images/product.jpg">
+<select id="stock">
+<option value="true">In Stock</option>
+<option value="false">Out of Stock</option>
+</select>
+</div>
+<button onclick="saveProduct()">Save Product</button>
+</div>
+
+<div class="card">
+<h3>Products</h3>
+<table>
+<thead>
+<tr><th>Name</th><th>Price</th><th>Img</th><th>Stock</th><th>Action</th></tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+async function saveProduct(){
+  const { collection, addDoc, doc, updateDoc } = window.fb;
+  const db = window.db;
+
+  const id = document.getElementById('docId').value;
+  const data = {
+    name: name.value,
+    category: category.value,
+    price: Number(price.value),
+    weight: weight.value,
+    img: img.value,
+    stock: stock.value === 'true'
+  };
+
+  if(id){
+    await updateDoc(doc(db,'products',id),data);
+  } else {
+    await addDoc(collection(db,'products'),data);
+  }
+
+  loadProducts();
+}
+
+async function loadProducts(){
+  const { collection, getDocs } = window.fb;
+  const db = window.db;
+  const snapshot = await getDocs(collection(db,'products'));
+  const table = document.getElementById('productTable');
+  table.innerHTML='';
+
+  snapshot.forEach(d=>{
+    const p = d.data();
+    table.innerHTML += `
+    <tr>
+      <td>${p.name}</td>
+      <td>₹${p.price}</td>
+      <td><img src="${p.img}"></td>
+      <td>${p.stock?'Yes':'No'}</td>
+      <td>
+        <button onclick="editProduct('${d.id}', ${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
+        <button onclick="deleteProduct('${d.id}')" style="background:red">Delete</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function editProduct(id,p){
+  docId.value=id;
+  name.value=p.name;
+  category.value=p.category;
+  price.value=p.price;
+  weight.value=p.weight;
+  img.value=p.img;
+  stock.value=p.stock;
+}
+
+async function deleteProduct(id){
+  const { doc, deleteDoc } = window.fb;
+  await deleteDoc(doc(window.db,'products',id));
+  loadProducts();
+}
+</script>
+
+</body>
+</html>
