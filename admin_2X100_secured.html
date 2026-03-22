@@ -121,39 +121,56 @@ async function saveProduct(){
   const db = window.db;
 
   const id = document.getElementById('docId').value;
-  const data = {
-    name: name.value,
-    category: category.value,
-    price: Number(price.value),
-    weight: weight.value,
-    img: img.value,
-    stock: stock.value === 'true'
-  };
 
-  if(id){
-    await updateDoc(doc(db,'products',id),data);
-  } else {
-    await addDoc(collection(db,'products'),data);
+  const name = document.getElementById('name').value.trim();
+  const category = document.getElementById('category').value.trim();
+  const price = Number(document.getElementById('price').value);
+  const weight = document.getElementById('weight').value.trim();
+  const img = document.getElementById('img').value.trim();
+  const stock = document.getElementById('stock').value === 'true';
+
+  // ✅ Validation
+  if(!name || !price || !img){
+    alert("Name, Price and Image required");
+    return;
   }
 
-  loadProducts();
+  const data = { name, category, price, weight, img, stock };
+
+  try{
+    if(id){
+      await updateDoc(doc(db,'products',id),data);
+    } else {
+      await addDoc(collection(db,'products'),data);
+    }
+
+    clearForm();
+    loadProducts();
+
+  }catch(e){
+    console.error(e);
+    alert("Error saving product");
+  }
 }
 
+// ✅ LOAD PRODUCTS (FIXED)
 async function loadProducts(){
   const { collection, getDocs } = window.fb;
   const db = window.db;
+
   const snapshot = await getDocs(collection(db,'products'));
   const table = document.getElementById('productTable');
   table.innerHTML='';
 
   snapshot.forEach(d=>{
     const p = d.data();
+
     table.innerHTML += `
     <tr>
-      <td>${p.name}</td>
-      <td>₹${p.price}</td>
-      <td><img src="${p.img}"></td>
-      <td>${p.stock?'Yes':'No'}</td>
+      <td>${p.name ?? '-'}</td>
+      <td>₹${p.price ?? 0}</td>
+      <td><img src="${p.img ?? ''}" onerror="this.style.display='none'"></td>
+      <td>${p.stock ? 'Yes' : 'No'}</td>
       <td>
         <button onclick="editProduct('${d.id}', ${JSON.stringify(p).replace(/"/g,'&quot;')})">Edit</button>
         <button onclick="deleteProduct('${d.id}')" style="background:red">Delete</button>
@@ -162,20 +179,33 @@ async function loadProducts(){
   });
 }
 
+// ✅ EDIT (FIXED)
 function editProduct(id,p){
-  docId.value=id;
-  name.value=p.name;
-  category.value=p.category;
-  price.value=p.price;
-  weight.value=p.weight;
-  img.value=p.img;
-  stock.value=p.stock;
+  document.getElementById('docId').value = id;
+  document.getElementById('name').value = p.name || '';
+  document.getElementById('category').value = p.category || '';
+  document.getElementById('price').value = p.price || '';
+  document.getElementById('weight').value = p.weight || '';
+  document.getElementById('img').value = p.img || '';
+  document.getElementById('stock').value = String(p.stock);
 }
 
+// ✅ DELETE
 async function deleteProduct(id){
   const { doc, deleteDoc } = window.fb;
   await deleteDoc(doc(window.db,'products',id));
   loadProducts();
+}
+
+// ✅ CLEAR FORM
+function clearForm(){
+  document.getElementById('docId').value='';
+  document.getElementById('name').value='';
+  document.getElementById('category').value='';
+  document.getElementById('price').value='';
+  document.getElementById('weight').value='';
+  document.getElementById('img').value='';
+  document.getElementById('stock').value='true';
 }
 </script>
 
