@@ -268,7 +268,7 @@ CLOSE✖
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC6uZEcHZGSBAkk2bBQSk30gHhibe3F-q0",
@@ -280,17 +280,20 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // 🔥 GLOBAL products array
+
+
 window.products = [];
 
-async function loadProducts() {
-  const querySnapshot = await getDocs(collection(db, "products"));
-  window.products = [];
+function loadProducts() {
+  onSnapshot(collection(db, "products"), (snapshot) => {
+    window.products = [];
 
-  querySnapshot.forEach((doc) => {
-    window.products.push(doc.data());
+    snapshot.forEach((doc) => {
+      window.products.push(doc.data());
+    });
+
+    renderProducts(window.products); // initial render
   });
-
-  renderProducts(window.products); // ✅ IMPORTANT
 }
 
 // load after page ready
@@ -300,35 +303,61 @@ window.addEventListener("DOMContentLoaded", loadProducts);
 let cart=[];
 
 function renderProducts(list){
-const box=document.getElementById('productList');
-box.innerHTML='';
+  const box = document.getElementById('productList');
+  box.innerHTML = '';
 
-list.forEach((p,i)=>{
-box.innerHTML+=`
-<div class="card">
-<img src="${p.img}" loading="lazy">
-<div class="card-body">
+  list.forEach((p,i)=>{
+    box.innerHTML += `
+    <div class="card" style="position:relative; ${!p.stock ? 'opacity:0.6;' : ''}">
+      
+      <!-- 🔴 Out of Stock Badge -->
+      ${!p.stock ? `
+      <div style="
+        position:absolute;
+        top:10px;
+        left:10px;
+        background:red;
+        color:#fff;
+        padding:4px 10px;
+        border-radius:20px;
+        font-size:12px;">
+        Out of Stock
+      </div>` : ''}
 
-<span style="
-display:inline-block;
-background:#2e7d32;
-color:#fff;
-padding:4px 12px;
-border-radius:20px;
-font-size:12px;
-margin-bottom:8px;">
-${p.category}
-</span>
+      <img src="${p.img}" loading="lazy" onerror="this.style.display='none'">
 
-<h3>${p.name}</h3>
-<div class="price">₹${p.price}</div>
-<p style="color:#777;font-size:13px;margin:4px 0;">
-⚖️ ${p.weight}
-</p>
-<button onclick='addToCart(${JSON.stringify(p)})'>Add to Cart</button>
-</div>
-</div>`;
-});
+      <div class="card-body">
+
+        <span style="
+        display:inline-block;
+        background:#2e7d32;
+        color:#fff;
+        padding:4px 12px;
+        border-radius:20px;
+        font-size:12px;
+        margin-bottom:8px;">
+        ${p.category ?? '-'}
+        </span>
+
+        <h3>${p.name ?? 'No Name'}</h3>
+
+        <div class="price">₹${p.price ?? 0}</div>
+
+        <p style="color:#777;font-size:13px;margin:4px 0;">
+        ⚖️ ${p.weight ?? ''}
+        </p>
+
+        <!-- 🛒 Button Fix -->
+        <button 
+          onclick='addToCart(${JSON.stringify(p).replace(/'/g,"&#39;")})'
+          ${!p.stock ? 'disabled style="background:gray;cursor:not-allowed"' : ''}
+        >
+          ${p.stock ? 'Add to Cart' : 'Out of Stock'}
+        </button>
+
+      </div>
+    </div>`;
+  });
 }
 
 function addToCart(product){
