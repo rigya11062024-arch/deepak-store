@@ -301,12 +301,56 @@ window.addEventListener("DOMContentLoaded", loadProducts);
 </script>
 <script>
 let cart=[];
-
 function renderProducts(list){
   const box = document.getElementById('productList');
   box.innerHTML = '';
 
   list.forEach((p,i)=>{
+
+    // 👉 Calculate discount
+    let priceHTML = '';
+    let offerBadge = '';
+
+    if (p.originalPrice && p.originalPrice > p.price) {
+      const percent = Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100);
+
+      priceHTML = `
+        <div class="price" style="font-weight:600;">
+          ₹${p.price}
+          <span style="
+            text-decoration:line-through;
+            color:#888;
+            font-size:14px;
+            margin-left:6px;">
+            ₹${p.originalPrice}
+          </span>
+          <span style="
+            color:green;
+            font-size:13px;
+            margin-left:6px;">
+            ${percent}% OFF
+          </span>
+        </div>
+      `;
+
+      // 🔥 Offer badge
+      offerBadge = `
+        <div style="
+          position:absolute;
+          top:10px;
+          right:10px;
+          background:#e53935;
+          color:#fff;
+          padding:4px 10px;
+          border-radius:20px;
+          font-size:12px;">
+          ${percent}% OFF
+        </div>
+      `;
+    } else {
+      priceHTML = `<div class="price">₹${p.price ?? 0}</div>`;
+    }
+
     box.innerHTML += `
     <div class="card" style="position:relative; ${!p.stock ? 'opacity:0.6;' : ''}">
       
@@ -323,6 +367,9 @@ function renderProducts(list){
         font-size:12px;">
         Out of Stock
       </div>` : ''}
+
+      <!-- 🟢 Offer Badge -->
+      ${offerBadge}
 
       <img src="${p.img}" loading="lazy" onerror="this.style.display='none'">
 
@@ -341,13 +388,13 @@ function renderProducts(list){
 
         <h3>${p.name ?? 'No Name'}</h3>
 
-        <div class="price">₹${p.price ?? 0}</div>
+        ${priceHTML}
 
         <p style="color:#777;font-size:13px;margin:4px 0;">
         ⚖️ ${p.weight ?? ''}
         </p>
 
-        <!-- 🛒 Button Fix -->
+        <!-- 🛒 Button -->
         <button 
           onclick='addToCart(${JSON.stringify(p).replace(/'/g,"&#39;")})'
           ${!p.stock ? 'disabled style="background:gray;cursor:not-allowed"' : ''}
